@@ -1,0 +1,66 @@
+version: '3.9'
+
+services:
+  fastapi-app:
+    container_name: fastapi-app
+    build:
+      context: ./docker/app
+      args:
+        - PYTHON_VERSION=${PYTHON_VERSION}
+        - DEBIAN_VERSION=${DEBIAN_VERSION}
+        - MLFLOW_VERSION=${MLFLOW_VERSION}
+        - MLFLOW_SERVER_PORT=${MLFLOW_SERVER_PORT}
+    image: "nassarx/fastapi-app:1.0"
+    volumes:
+      - ./app:/code/app
+    ports:
+      - "80:80"
+      - "5678:5678"
+
+  mlflow-server:
+    container_name: mlflow-server
+    build:
+      context: ./docker/mlflow-server
+      args:
+        - PYTHON_VERSION=${PYTHON_VERSION}
+        - DEBIAN_VERSION=${DEBIAN_VERSION}
+        - MLFLOW_VERSION=${MLFLOW_VERSION}
+        - MLFLOW_SERVER_PORT=${MLFLOW_SERVER_PORT}
+    image: "nassarx/mlflow-server:1.0"
+    environment:
+      - MLFLOW_BACKEND_STORE=${MLFLOW_BACKEND_STORE}
+      - MLFLOW_ARTIFACT_STORE=${MLFLOW_ARTIFACT_STORE}
+    expose:
+      - "${MLFLOW_SERVER_PORT}"
+    ports:
+      - "${MLFLOW_SERVER_HOST_PORT}:${MLFLOW_SERVER_PORT}"
+    volumes:
+      - ./mlruns:${MLFLOW_BACKEND_DIR}:rw
+      - ./mlruns/models:${MLFLOW_ARTIFACT_STORE}:rw
+
+  kedro-framework:
+    container_name: kedro-${REPO_NAME}
+    build:
+      context: ./docker/kedro
+      args:
+        - PYTHON_VERSION=${PYTHON_VERSION}
+        - DEBIAN_VERSION=${DEBIAN_VERSION}
+        - PROJECT_NAME=${PROJECT_NAME}
+        - OUTPUT_DIR=${OUTPUT_DIR}
+        - REPO_NAME=${REPO_NAME}
+        - PYTHON_PACKAGE=${PYTHON_PACKAGE}
+    environment:
+      - GRANT_SUDO="yes"
+    image: ${REPO_NAME}
+    volumes:
+      - ./kedro:/home/kedro_docker/${OUTPUT_DIR}
+      - ./mlruns/models:${MLFLOW_ARTIFACT_STORE}
+    ports:
+      - "8889:8888"
+      - "4142:4141"
+    depends_on:
+      - mlflow-server
+
+networks:
+  default:
+    name: mlflow-kedro-starter
