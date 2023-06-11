@@ -38,6 +38,9 @@ def process_daily_transaction_data(partitioned_input: Dict[str, Callable[[], Any
     merged_df = pd.DataFrame()
 
     for partition_id, partition_load_func in sorted(partitioned_input.items()):
+        if partition_id == ".gitkeep":
+            continue
+
         partition_data = partition_load_func()  # load actual partition data
         merged_df = pd.concat([merged_df, partition_data], ignore_index=True, sort=True)  # concat with existing result
 

@@ -5,6 +5,8 @@ nb_days: 30
 start_date: "2020-01-01"
 radius: 5
 new_radius: 50
+
+# Preprocessing | Splitting configs
 start_train_date: "2020-01-01"
 delta_train: 10
 delta_delay: 7

@@ -78,6 +78,9 @@ x_train:
   type: pandas.CSVDataSet
   filepath: data/05_model_input/x_train.csv
   layer: model_input
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
 
 y_train:
   type: pandas.CSVDataSet
@@ -88,6 +91,9 @@ x_test:
   type: pandas.CSVDataSet
   filepath: data/05_model_input/x_test.csv
   layer: model_input
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
 
 y_test:
   type: pandas.CSVDataSet
