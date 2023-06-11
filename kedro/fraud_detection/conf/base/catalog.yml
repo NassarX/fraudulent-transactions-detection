@@ -1,0 +1,85 @@
+# Here you can define all your data sets by using simple YAML syntax.
+#
+# Documentation for this file format can be found in "The Data Catalog"
+# Link: https://kedro.readthedocs.io/en/stable/05_data/01_data_catalog.html
+
+## ETL
+
+### Simulate
+customers_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/01_customers_data.csv
+  layer: raw
+
+terminals_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/02_terminals_data.csv
+  layer: raw
+
+customers_terminals_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/03_customers_terminals_data.csv
+  layer: raw
+
+transactions_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/04_transactions_data.csv
+  layer: raw
+
+fraud_transactions_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/06_fraud_transactions_data.csv
+  layer: raw
+  load_args:
+    parse_dates:
+      [TX_DATETIME]
+
+### Transformation
+fraud_transactions_transform_v1_data:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/01_fraud_transactions_transformed_data.csv
+  layer: intermediate
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
+
+fraud_transactions_transform_v2_data:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/02_fraud_transactions_transformed_data.csv
+  layer: intermediate
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
+
+fraud_transactions_transform_v3_data:
+  type: pandas.CSVDataSet
+  filepath: data/02_intermediate/03_fraud_transactions_transformed_data.csv
+  layer: intermediate
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
+
+### Preprocessing
+daily_transactions_data:
+  type: PartitionedDataSet
+  path: data/03_primary/daily_batches  # path to the location of partitions
+  dataset: pandas.CSVDataSet
+  layer: primary
+
+merged_transactions_data:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/merged_transactions_data.csv
+  layer: primary
+  load_args:
+    parse_dates:
+      [ TX_DATETIME ]
+
+train_data:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/train.csv
+  layer: feature
+
+test_data:
+  type: pandas.CSVDataSet
+  filepath: data/04_feature/test.csv
+  layer: feature

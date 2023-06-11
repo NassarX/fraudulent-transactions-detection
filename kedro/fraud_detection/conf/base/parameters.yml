@@ -1,0 +1,11 @@
+# ETL
+n_customers: 100
+n_terminals: 100
+nb_days: 30
+start_date: "2020-01-01"
+radius: 5
+new_radius: 50
+start_train_date: "2020-01-01"
+delta_train: 10
+delta_delay: 7
+delta_test: 10
