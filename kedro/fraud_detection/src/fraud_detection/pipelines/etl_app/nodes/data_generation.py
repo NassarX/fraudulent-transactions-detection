@@ -6,13 +6,13 @@ import ast
 
 def generate_customer_profiles_data(n_customers: int, random_state=0) -> pd.DataFrame:
     """Generate customer profiles data.
-        params:
-            n_customers: number of customers to generate
-            random_state: random seed
-
-        returns:
-            customer_profiles_table: a dataframe with customer profiles data
+    params:
+        n_customers: number of customers to generate
+        random_state: random state for reproducibility
+    returns:
+        customer_profiles_table: dataframe containing customer profiles
     """
+
     np.random.seed(random_state)
     customer_properties = []
 
@@ -146,7 +146,7 @@ def generate_transactions_data(customers_terminals_data: pd.DataFrame, start_dat
         mean_nb_tx_per_day = customer_profile['mean_nb_tx_per_day'].values[0]
         nb_terminals = customer_profile['nb_terminals'].values[0]
         available_terminals = ast.literal_eval(customer_profile['available_terminals'].values[0])
-        #available_terminals = customer_profile['available_terminals'].values[0]
+        # available_terminals = customer_profile['available_terminals'].values[0]
 
         if nb_terminals == 0:
             continue  # Skip generating transactions if no available terminals
@@ -212,6 +212,14 @@ def generate_transactions_data(customers_terminals_data: pd.DataFrame, start_dat
 
 def generate_fraud_Scenarios_data(customer_profiles_data: pd.DataFrame, terminals_data: pd.DataFrame,
                                   transactions_data: pd.DataFrame) -> pd.DataFrame:
+    """Generate fraud scenarios data.
+        params:
+            customer_profiles_data: a dataframe with customer profiles data
+            terminals_data: a dataframe with terminal profiles data
+            transactions_data: a dataframe with transactions data
+        returns:
+            transactions_data: a dataframe with transactions data
+    """
     # By default, all transactions are genuine
     transactions_data['TX_FRAUD'] = 0
     transactions_data['TX_FRAUD_SCENARIO'] = 0

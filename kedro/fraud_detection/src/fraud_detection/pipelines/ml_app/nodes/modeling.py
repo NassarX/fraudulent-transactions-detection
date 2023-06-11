@@ -16,6 +16,14 @@ def fit_predict_models(
         y_train: pd.DataFrame,
         output_feature="TX_FRAUD"
 ) -> tuple[Any, Any]:
+    """ Fits and predicts multiple models on the training and test datasets
+    :param input_features: List of input features
+    :param x_train: DataFrame containing training data
+    :param x_test: DataFrame containing test data
+    :param y_train: DataFrame containing training labels
+    :param output_feature: Name of output feature
+    :return: Tuple containing trained models and predictions
+    """
     conf_loader = ConfigLoader("conf")
     parameters = conf_loader.get("parameters.yml", "parameters")
     models = parameters["models"]
@@ -62,6 +70,14 @@ def fit_model(
         y_train: pd.DataFrame,
         output_feature,
 ):
+    """ Fits a model on the training dataset and returns the trained model and training time
+    :param model: Model to fit
+    :param input_features: List of input features
+    :param x_train: DataFrame containing training data
+    :param y_train: DataFrame containing training labels
+    :param output_feature: Name of output feature
+    :return: Tuple containing trained model and training time
+    """
     # We first train the classifier using the `fit` method, and pass as arguments the input and output features
     start_time = time.time()
     model.fit(x_train[input_features], y_train[output_feature])
@@ -74,6 +90,12 @@ def predict(
         model,
         x_test: pd.DataFrame,
         input_features: list) -> Dict[str, Any]:
+    """ Predicts using a trained model on the test dataset
+    :param model: Trained model
+    :param x_test: DataFrame containing test data
+    :param input_features: List of input features
+    :return: Dictionary containing model predictions
+    """
     start_time = time.time()
     predictions = model.predict_proba(x_test[input_features])[:, 1]
     prediction_time = time.time() - start_time
@@ -82,6 +104,11 @@ def predict(
 
 
 def extract_model_configs(model: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    """ Extracts model configs from parameters.yml
+    :param model: Name of model
+    :param parameters: Dictionary containing parameters
+    :return: Dictionary containing model configs
+    """
     configs = {}
     model_configs = parameters[f"{model}_configs"]
     if model_configs is not None:
@@ -91,15 +118,11 @@ def extract_model_configs(model: str, parameters: Dict[str, Any]) -> Dict[str, A
 
 def scaleData(train_df: pd.DataFrame, test_df: pd.DataFrame, input_features: List[str]) -> Tuple[
     pd.DataFrame, pd.DataFrame]:
-    """Scale input features in train and test datasets using StandardScaler.
-
-    Args:
-        train_df (pd.DataFrame): Training dataset
-        test_df (pd.DataFrame): Test dataset
-        input_features (List[str]): List of input feature column names to scale
-
-    Returns:
-        Tuple of scaled train and test dataframes
+    """ Scales the input features in both train and test datasets
+    :param train_df: DataFrame containing training data
+    :param test_df: DataFrame containing test data
+    :param input_features: List of input features
+    :return: Tuple containing scaled train and test datasets
     """
     # Create a scaler object
     scaler = StandardScaler()
@@ -119,6 +142,12 @@ def scaleData(train_df: pd.DataFrame, test_df: pd.DataFrame, input_features: Lis
 
 
 def build_classifier(classifier_name: str, configs: Dict[str, Any], ):
+    """ Builds a classifier based on the classifier name
+    :param classifier_name:  of classifier
+    :param configs: Dictionary containing classifier configs
+    :return: Classifier
+    """
+
     classifier = tree.DecisionTreeClassifier()
 
     if classifier_name == "logistic_regression":

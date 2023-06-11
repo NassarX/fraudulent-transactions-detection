@@ -7,13 +7,12 @@ from pandas import DataFrame
 
 
 def split_transaction_data_into_batches(transactions_data: pd.DataFrame, start_date: str) -> Dict[str, Any]:
-    """
-
-    Args:
-        transactions_data (DataFrame):
-        start_date (str):
-    Returns:
-
+    """Split transaction data into batches by day.
+        params:
+            transactions_data: DataFrame containing transactions data
+            start_date: Date from which to start splitting data into batches
+        return:
+            Dictionary containing batches of transactions data
     """
     start_date = dt.strptime(start_date, "%Y-%m-%d")
     batches = {}
