@@ -2,6 +2,8 @@
 
 # SET path
 export PATH="${APP_HOME}/.local/bin:$PATH"
+export JUPYTER_PLATFORM_DIRS=1
+
 
 # Check if the directory exists
 if [[ ! -d "${APP_HOME}/${OUTPUT_DIR}/${REPO_NAME}" ]]; then
@@ -26,7 +28,7 @@ fi
 # Change directory to the Kedro project directory
 # shellcheck disable=SC2164
 cd "${APP_HOME}/${OUTPUT_DIR}/${REPO_NAME}"
-pip install -r "src/requirements.txt" >/dev/null 2>&1
+pip install -r "src/requirements.txt" #>/dev/null 2>&1
 
 # Initialize the MLflow tracking server configs
 if [[ ! -f "conf/local/mlflow.yml" ]]; then
@@ -39,7 +41,7 @@ if [[ ! -f "${APP_HOME}/.local/share/jupyter/kernels/kedro_${REPO_NAME}" ]]; the
 fi
 
 # Print the message indicating readiness
-echo "Container is ready to use! | kedro viz server running ...."
+echo "Container is ready to use ...."
 
 # Run the command
 exec "$@"

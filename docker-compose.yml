@@ -51,6 +51,7 @@ services:
         - PYTHON_PACKAGE=${PYTHON_PACKAGE}
     environment:
       - GRANT_SUDO="yes"
+      - PYTHONPATH="/home/kedro_docker/${OUTPUT_DIR}/${REPO_NAME}"
     image: ${REPO_NAME}
     volumes:
       - ./kedro:/home/kedro_docker/${OUTPUT_DIR}
