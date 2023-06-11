@@ -11,3 +11,44 @@ start_train_date: "2020-01-01"
 delta_train: 10
 delta_delay: 7
 delta_test: 10
+
+# Modeling
+models: ["logistic_regression", "decision_tree_depth_2", "decision_tree_depth_unlimited", "random_forest", "xgboost"]
+
+logistic_regression_configs:
+  - random_state: 0
+
+decision_tree_depth_2_configs:
+  - max_depth: 2
+  - random_state: 0
+
+decision_tree_depth_unlimited_configs:
+  - random_state: 0
+
+random_forest_configs:
+  - random_state: 0
+  - n_jobs: -1
+
+xgboost_configs:
+  - random_state: 0
+  - n_jobs: -1
+
+output_feature:
+  - TX_FRAUD
+
+input_features:
+  - TX_AMOUNT
+  - TX_DURING_WEEKEND
+  - TX_DURING_NIGHT
+  - CUSTOMER_ID_NB_TX_1DAY_WINDOW
+  - CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW
+  - CUSTOMER_ID_NB_TX_7DAY_WINDOW
+  - CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW
+  - CUSTOMER_ID_NB_TX_30DAY_WINDOW
+  - CUSTOMER_ID_AVG_AMOUNT_30DAY_WINDOW
+  - TERMINAL_ID_NB_TX_1DAY_WINDOW
+  - TERMINAL_ID_RISK_1DAY_WINDOW
+  - TERMINAL_ID_NB_TX_7DAY_WINDOW
+  - TERMINAL_ID_RISK_7DAY_WINDOW
+  - TERMINAL_ID_NB_TX_30DAY_WINDOW
+  - TERMINAL_ID_RISK_30DAY_WINDOW

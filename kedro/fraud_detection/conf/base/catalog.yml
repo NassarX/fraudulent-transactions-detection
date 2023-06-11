@@ -99,3 +99,15 @@ y_test:
   type: pandas.CSVDataSet
   filepath: data/05_model_input/y_test.csv
   layer: model_input
+
+trained_models:
+  type: PartitionedDataSet
+  path: data/06_models
+  dataset: pickle.PickleDataSet
+  layer: models
+
+models_predictions:
+  type: PartitionedDataSet
+  path: data/07_model_output
+  dataset: pandas.CSVDataSet
+  layer: model_output
