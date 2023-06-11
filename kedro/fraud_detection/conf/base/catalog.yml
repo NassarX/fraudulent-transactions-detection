@@ -62,24 +62,34 @@ fraud_transactions_transform_v3_data:
 ### Preprocessing
 daily_transactions_data:
   type: PartitionedDataSet
-  path: data/03_primary/daily_batches  # path to the location of partitions
+  path: data/03_primary  # path to the location of partitions
   dataset: pandas.CSVDataSet
   layer: primary
 
-merged_transactions_data:
+simulated_transactions_data:
   type: pandas.CSVDataSet
-  filepath: data/03_primary/merged_transactions_data.csv
-  layer: primary
+  filepath: data/04_feature/simulated_transactions_data.csv
+  layer: feature
   load_args:
     parse_dates:
       [ TX_DATETIME ]
 
-train_data:
+x_train:
   type: pandas.CSVDataSet
-  filepath: data/04_feature/train.csv
-  layer: feature
+  filepath: data/05_model_input/x_train.csv
+  layer: model_input
 
-test_data:
+y_train:
   type: pandas.CSVDataSet
-  filepath: data/04_feature/test.csv
-  layer: feature
+  filepath: data/05_model_input/y_train.csv
+  layer: model_input
+
+x_test:
+  type: pandas.CSVDataSet
+  filepath: data/05_model_input/x_test.csv
+  layer: model_input
+
+y_test:
+  type: pandas.CSVDataSet
+  filepath: data/05_model_input/y_test.csv
+  layer: model_input

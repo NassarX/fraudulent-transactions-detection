@@ -45,34 +45,35 @@ def process_daily_transaction_data(partitioned_input: Dict[str, Callable[[], Any
 
 
 def split_train_test_data(processed_df: pd.DataFrame, start_date_train: str, delta_train=7, delta_delay=7,
-                          delta_test=7) -> tuple[Any, DataFrame]:
-    """Split processed dataset in train and test sets
+                          delta_test=7) -> Tuple[Any, Any, Any, Any]:
+    """Split processed dataset into train and test sets
 
     Args:
         processed_df (pd.DataFrame): Dataframe containing the processed transaction dataset
-        start_date_train (datetime): start date for train data
+        start_date_train (str): start date for train data in 'YYYY-MM-DD' format
         delta_train (int): period for training
-        delta_delay (int):
-        delta_test (int):
+        delta_delay (int): delay period
+        delta_test (int): period for testing
 
     Returns:
-        Pandas dataframes of the training data, test data, and test labels (if any)
+        Tuple of pandas dataframes: x_train, y_train, x_test, y_test
     """
     # Convert the string to a datetime object
     start_date_train = dt.strptime(start_date_train, '%Y-%m-%d')
 
     # Perform chronological train test split (80:20) i.e. 8 weeks:2 weeks
+
     # Get the training set data
     train_df = processed_df[
         (processed_df.TX_DATETIME >= start_date_train) &
-        (processed_df.TX_DATETIME < start_date_train + timedelta(days=delta_train)
-         )]
+        (processed_df.TX_DATETIME < start_date_train + timedelta(days=delta_train))
+    ]
 
     # Get the test set data
     test_df = []
 
     # Note: Cards known to be compromised after the delay period are removed from the test set
-    # That is, for each test day, all frauds known at (test_day-delay_period) are removed
+    # That is, for each test day, all frauds known at (test_day - delay_period) are removed
 
     # First, get known defrauded customers from the training set
     known_defrauded_customers = set(train_df[train_df.TX_FRAUD == 1].CUSTOMER_ID)
@@ -84,13 +85,14 @@ def split_train_test_data(processed_df: pd.DataFrame, start_date_train: str, del
     for day in range(delta_test):
         # Get test data for that day
         test_df_day = processed_df[
-            processed_df.TX_TIME_DAYS == start_tx_time_days_training + delta_train + delta_delay + day]
+            processed_df.TX_TIME_DAYS == start_tx_time_days_training + delta_train + delta_delay + day
+        ]
 
         # Compromised cards from that test day, minus the delay period,
         # are added to the pool of known defrauded customers
-        test_df_day_delay_period = processed_df[processed_df.TX_TIME_DAYS == start_tx_time_days_training +
-                                                delta_train +
-                                                day - 1]
+        test_df_day_delay_period = processed_df[
+            processed_df.TX_TIME_DAYS == start_tx_time_days_training + delta_train + day - 1
+        ]
 
         new_defrauded_customers = set(test_df_day_delay_period[test_df_day_delay_period.TX_FRAUD == 1].CUSTOMER_ID)
         known_defrauded_customers = known_defrauded_customers.union(new_defrauded_customers)
@@ -101,8 +103,13 @@ def split_train_test_data(processed_df: pd.DataFrame, start_date_train: str, del
 
     test_df = pd.concat(test_df)
 
-    # Sort data sets by ascending order of transaction ID
-    train_df = train_df.sort_values('TRANSACTION_ID')
-    test_df = test_df.sort_values('TRANSACTION_ID')
+    # Split train data into features (x_train) and labels (y_train)
+    x_train = train_df.drop(columns=['TX_FRAUD'])
+    y_train = train_df['TX_FRAUD']
 
-    return train_df, test_df
+    # Split test data into features (x_test) and labels (y_test)
+    x_test = test_df.drop(columns=['TX_FRAUD'])
+    y_test = test_df['TX_FRAUD']
+
+    return x_train, y_train, x_test, y_test
+

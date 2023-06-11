@@ -106,16 +106,16 @@ def create_etl_pipeline(**kwargs):
             node(
                 func=process_daily_transaction_data,
                 inputs=dict(partitioned_input="daily_transactions_data"),
-                outputs="merged_transactions_data",
+                outputs="simulated_transactions_data",
                 tags=["etl_preprocess"],
                 name="node_merge_daily_transactions_data"
             ),
             node(
                 func=split_train_test_data,
-                inputs=dict(processed_df="merged_transactions_data", start_date_train="params:start_train_date",
+                inputs=dict(processed_df="simulated_transactions_data", start_date_train="params:start_train_date",
                             delta_train="params:delta_train", delta_delay="params:delta_delay",
                             delta_test="params:delta_test"),
-                outputs=["train_data", "test_data"],
+                outputs=["x_train", "y_train", "x_test", "y_test"],
                 tags=["etl_preprocess"],
                 name="node_split_train_test_data"
             ),
