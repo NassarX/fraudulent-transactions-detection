@@ -82,5 +82,5 @@ ENTRYPOINT ["docker-entrypoint"]
 EXPOSE 8888 4141
 
 # Keep the container running by using an infinite loop
-CMD kedro viz --host=0.0.0.0 --no-browser && tail -f /dev/null
+CMD tail -f /dev/null
 
