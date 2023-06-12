@@ -36,7 +36,7 @@ services:
       - "${MLFLOW_SERVER_HOST_PORT}:${MLFLOW_SERVER_PORT}"
     volumes:
       - ./mlruns:${MLFLOW_BACKEND_DIR}:rw
-      - ./mlruns/models:${MLFLOW_ARTIFACT_STORE}:rw
+      - ./mlruns:${MLFLOW_ARTIFACT_STORE}:rw
 
   kedro-framework:
     container_name: kedro-${REPO_NAME}
@@ -55,7 +55,7 @@ services:
     image: ${REPO_NAME}
     volumes:
       - ./kedro:/home/kedro_docker/${OUTPUT_DIR}
-      - ./mlruns/models:${MLFLOW_ARTIFACT_STORE}
+      - ./mlruns:${MLFLOW_ARTIFACT_STORE}
     ports:
       - "8889:8888"
       - "4142:4141"
