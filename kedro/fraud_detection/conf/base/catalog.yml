@@ -7,107 +7,145 @@
 
 ### Simulate
 customers_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/01_customers_data.csv
-  layer: raw
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/01_raw/01_customers_data.csv
+  layer: Data Extracting
 
 terminals_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/02_terminals_data.csv
-  layer: raw
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/01_raw/02_terminals_data.csv
+  layer: Data Extracting
 
 customers_terminals_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/03_customers_terminals_data.csv
-  layer: raw
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/01_raw/03_customers_terminals_data.csv
+  layer: Data Transforming
 
 transactions_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/04_transactions_data.csv
-  layer: raw
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/01_raw/04_transactions_data.csv
+  layer: Data Transforming
 
 fraud_transactions_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/06_fraud_transactions_data.csv
-  layer: raw
-  load_args:
-    parse_dates:
-      [TX_DATETIME]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/01_raw/06_fraud_transactions_data.csv
+      load_args:
+        parse_dates:
+          [ TX_DATETIME ]
+  layer: Data Loading
 
 ### Transformation
 fraud_transactions_transform_v1_data:
-  type: pandas.CSVDataSet
-  filepath: data/02_intermediate/01_fraud_transactions_transformed_data.csv
-  layer: intermediate
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/02_intermediate/01_fraud_transactions_transformed_data.csv
+      load_args:
+        parse_dates:
+          [ TX_DATETIME ]
+  layer: Feature Engineering
 
 fraud_transactions_transform_v2_data:
-  type: pandas.CSVDataSet
-  filepath: data/02_intermediate/02_fraud_transactions_transformed_data.csv
-  layer: intermediate
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/02_intermediate/02_fraud_transactions_transformed_data.csv
+      load_args:
+        parse_dates:
+          [ TX_DATETIME ]
+  layer: Feature Engineering
 
 fraud_transactions_transform_v3_data:
-  type: pandas.CSVDataSet
-  filepath: data/02_intermediate/03_fraud_transactions_transformed_data.csv
-  layer: intermediate
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: pandas.CSVDataSet
+    filepath: data/02_intermediate/03_fraud_transactions_transformed_data.csv
+    load_args:
+      parse_dates:
+        [ TX_DATETIME ]
+  layer: Feature Engineering
 
 ### Preprocessing
 daily_transactions_data:
-  type: PartitionedDataSet
-  path: data/03_primary  # path to the location of partitions
-  dataset: pandas.CSVDataSet
-  layer: primary
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: PartitionedDataSet
+    path: data/03_primary  # path to the location of partitions
+    dataset: pandas.CSVDataSet
+  layer: Data Preprocessing
 
 simulated_transactions_data:
-  type: pandas.CSVDataSet
-  filepath: data/04_feature/simulated_transactions_data.csv
-  layer: feature
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+      type: pandas.CSVDataSet
+      filepath: data/04_feature/simulated_transactions_data.csv
+      load_args:
+        parse_dates:
+          [ TX_DATETIME ]
+  layer: Data Preprocessing
 
+### Model Input
 x_train:
-  type: pandas.CSVDataSet
-  filepath: data/05_model_input/x_train.csv
-  layer: model_input
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: pandas.CSVDataSet
+    filepath: data/05_model_input/x_train.csv
+    load_args:
+      parse_dates:
+        [ TX_DATETIME ]
+  layer: Data Preprocessing
 
 y_train:
-  type: pandas.CSVDataSet
-  filepath: data/05_model_input/y_train.csv
-  layer: model_input
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: pandas.CSVDataSet
+    filepath: data/05_model_input/y_train.csv
+  layer: Data Preprocessing
 
 x_test:
-  type: pandas.CSVDataSet
-  filepath: data/05_model_input/x_test.csv
-  layer: model_input
-  load_args:
-    parse_dates:
-      [ TX_DATETIME ]
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: pandas.CSVDataSet
+    filepath: data/05_model_input/x_test.csv
+    load_args:
+      parse_dates:
+        [ TX_DATETIME ]
+  layer: Data Preprocessing
 
 y_test:
-  type: pandas.CSVDataSet
-  filepath: data/05_model_input/y_test.csv
-  layer: model_input
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: pandas.CSVDataSet
+    filepath: data/05_model_input/y_test.csv
+  layer: Data Preprocessing
 
 trained_models:
-  type: PartitionedDataSet
-  path: data/06_models
-  dataset: pickle.PickleDataSet
-  layer: models
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: PartitionedDataSet
+    path: data/06_models
+    dataset: pickle.PickleDataSet
+  layer: Model Training
 
 models_predictions:
-  type: PartitionedDataSet
-  path: data/07_model_output
-  dataset: pandas.CSVDataSet
-  layer: model_output
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: PartitionedDataSet
+    path: data/07_model_output
+    dataset: pickle.PickleDataSet
+  layer: Model Inference
+
+models_metrics:
+  type: kedro_mlflow.io.metrics.MlflowMetricsDataSet
+  layer: Model Evaluation
+  prefix: metrics
