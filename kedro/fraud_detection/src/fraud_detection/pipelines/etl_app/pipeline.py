@@ -29,14 +29,14 @@ def create_etl_pipeline(**kwargs):
                 func=generate_customer_profiles_data,
                 inputs=dict(n_customers="params:n_customers"),
                 outputs="customers_data",
-                tags=["etl_generate"],
+                tags=["etl", "etl_generate"],
                 name="node_generate_customer_profiles_data"
             ),
             node(
                 func=generate_terminals_data,
                 inputs=dict(n_terminals="params:n_customers"),
                 outputs="terminals_data",
-                tags=["etl_generate"],
+                tags=["etl", "etl_generate"],
                 name="node_generate_terminals_data"
             ),
             node(
@@ -44,7 +44,7 @@ def create_etl_pipeline(**kwargs):
                 inputs=dict(customers_data="customers_data",
                             terminals_data="terminals_data", radius="params:radius"),
                 outputs="customers_terminals_data",
-                tags=["etl_generate"],
+                tags=["etl", "etl_generate"],
                 name="node_map_terminals_to_customers"
             ),
             node(
@@ -52,7 +52,7 @@ def create_etl_pipeline(**kwargs):
                 inputs=dict(customers_terminals_data="customers_terminals_data", start_date="params:start_date",
                             nb_days="params:nb_days"),
                 outputs="transactions_data",
-                tags=["etl_generate"],
+                tags=["etl", "etl_generate"],
                 name="node_generate_transactions_data"
             ),
             node(
@@ -60,7 +60,7 @@ def create_etl_pipeline(**kwargs):
                 inputs=dict(customer_profiles_data="customers_terminals_data",
                             terminals_data="terminals_data", transactions_data="transactions_data"),
                 outputs="fraud_transactions_data",
-                tags=["etl_generate"],
+                tags=["etl", "etl_generate"],
                 name="node_generate_fraud_Scenarios_data"
             ),
         ]
@@ -73,21 +73,21 @@ def create_etl_pipeline(**kwargs):
                 func=transform_datetime_features,
                 inputs=dict(transactions_data="fraud_transactions_data"),
                 outputs="fraud_transactions_transform_v1_data",
-                tags=["etl_transform"],
+                tags=["etl", "etl_transform"],
                 name="node_transform_datetime_features"
             ),
             node(
                 func=transform_customer_features,
                 inputs=dict(transactions_data="fraud_transactions_transform_v1_data"),
                 outputs="fraud_transactions_transform_v2_data",
-                tags=["etl_transform"],
+                tags=["etl", "etl_transform"],
                 name="node_transform_customer_features"
             ),
             node(
                 func=transform_terminal_features,
                 inputs=dict(transactions_data="fraud_transactions_transform_v2_data"),
                 outputs="fraud_transactions_transform_v3_data",
-                tags=["etl_transform"],
+                tags=["etl", "etl_transform"],
                 name="node_transform_terminal_features"
             ),
         ]
@@ -100,14 +100,14 @@ def create_etl_pipeline(**kwargs):
                 func=split_transaction_data_into_batches,
                 inputs=dict(transactions_data="fraud_transactions_transform_v3_data", start_date="params:start_date"),
                 outputs="daily_transactions_data",
-                tags=["etl_preprocess"],
+                tags=["etl", "etl_preprocess"],
                 name="node_split_transaction_data_into_batches"
             ),
             node(
                 func=process_daily_transaction_data,
                 inputs=dict(partitioned_input="daily_transactions_data"),
                 outputs="simulated_transactions_data",
-                tags=["etl_preprocess"],
+                tags=["etl", "etl_preprocess"],
                 name="node_merge_daily_transactions_data"
             ),
             node(
@@ -116,7 +116,7 @@ def create_etl_pipeline(**kwargs):
                             delta_train="params:delta_train", delta_delay="params:delta_delay",
                             delta_test="params:delta_test"),
                 outputs=["x_train", "y_train", "x_test", "y_test"],
-                tags=["etl_preprocess"],
+                tags=["etl", "etl_preprocess"],
                 name="node_split_train_test_data"
             ),
         ]
