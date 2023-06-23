@@ -97,12 +97,12 @@ Two stages can be distinguished in the design of an ML-based fraud detection sys
 - First stage consists of **building a prediction model** from a set of labeled historical data. This process is called supervised learning since the label of the transactions (genuine or fraudulent) is known.
 - Second stage, the prediction model obtained from the supervised learning process is used to **predict the label of new transactions**.
 
-![baseline_ml_workflow](assets/baseline_ml_workflow.png)
+![baseline_ml_workflow](assets/baseline_ML_workflow.png)
 
 #### Fraud Prediction Model
-For fraud detection, the output domain $$ \mathcal{Y} $$ is usually the predicted class for a given input $$x$$, that is $$\mathcal{Y}=\{0,1\}$$. Given that the output class is binary, these prediction models are also called *binary classifiers*. Alternatively, the output may also be expressed as a fraud probability, with $$\mathcal{Y}=[0,1]$$, or more generally as a risk score, with $$\mathcal{Y} = \mathbb{R}$$, where higher values express higher risks of fraud. 
+For fraud detection, the output domain $\mathcal{Y}$ is usually the predicted class for a given input $x$, that is $\mathcal{Y}=\{0,1\}$. Given that the output class is binary, these prediction models are also called *binary classifiers*. Alternatively, the output may also be expressed as a fraud probability, with $\mathcal{Y}=[0,1]$, or more generally as a risk score, with $\mathcal{Y} = \mathbb{R}$, where higher values express higher risks of fraud. 
 
-The training (or building) of a prediction model $$h(x,\theta)$$ consists of finding the parameters $$\theta$$ that provide the best performance. The performance of a prediction model is assessed using a loss function, that compares the true label $$y$$ to the predicted label $$\hat{y}=h(x,\theta)$$ for an input $$x$$. In binary classification problems, a common loss function is the zero/one loss function $$ L_{0/1} $$, which assigns a loss equal to one in the case of wrong prediction, and zero otherwise:
+The training (or building) of a prediction model $h(x,\theta)$ consists of finding the parameters $\theta$ that provide the best performance. The performance of a prediction model is assessed using a loss function, that compares the true label $y$ to the predicted label $\hat{y}=h(x,\theta)$ for an input $$x$$. In binary classification problems, a common loss function is the zero/one loss function $L_{0/1}$, which assigns a loss equal to one in the case of wrong prediction, and zero otherwise:
 
 $$
 \begin{align}
