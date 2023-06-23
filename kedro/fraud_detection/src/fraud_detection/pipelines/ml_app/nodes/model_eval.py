@@ -6,7 +6,7 @@ from sklearn import metrics
 
 
 def evaluate_models(predictions: Dict[str, Callable[[], Any]], y_test: pd.DataFrame) -> dict[
-    str, dict[str, float | Any]]:
+    str, dict[str, Any]]:
     """
     Evaluates model performance by comparing predictions to actual values
     :param predictions: dictionary of predictions
