@@ -4,12 +4,9 @@ import warnings
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
-from kedro.pipeline import Pipeline
-from platform import python_version
 from typing import Dict
 from fraud_detection.pipelines.etl_app.pipeline import create_etl_pipeline
 from fraud_detection.pipelines.ml_app.pipeline import create_ml_pipeline
-from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
 
@@ -26,6 +23,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     etl_generation_pipeline = etl_pipeline.only_nodes_with_tags("etl_generate")
     etl_transformation_pipeline = etl_pipeline.only_nodes_with_tags("etl_transform")
     etl_preprocessing_pipeline = etl_pipeline.only_nodes_with_tags("etl_preprocess")
+    etl_exploration_pipeline = etl_pipeline.only_nodes_with_tags("etl_explore")
 
     # Machine Learning Pipeline
     ml_pipeline = create_ml_pipeline()
@@ -40,6 +38,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
         "etl_generation": etl_generation_pipeline,
         "etl_transformation": etl_transformation_pipeline,
         "etl_preprocessing": etl_preprocessing_pipeline,
+        "etl_exploration": etl_exploration_pipeline,
         "ml_training": ml_training_pipeline,
         "ml_inference": ml_inference_pipeline,
     }

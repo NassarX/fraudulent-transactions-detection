@@ -94,6 +94,28 @@ simulated_transactions_data:
           [ TX_DATETIME ]
   layer: Data Preprocessing
 
+# Exploratory Data Analysis
+transactions_distributions_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/transactions_distributions.png
+  layer: Data Exploration
+
+transactions_daily_stats_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/transactions_daily_stats.png
+  layer: Data Exploration
+
+fraud_distribution_plot:
+  type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
+  data_set:
+    type: matplotlib.MatplotlibWriter
+    filepath: data/08_reporting/fraud_distribution.png
+  layer: Data Exploration
+
 ### Model Input
 x_train:
   type: kedro_mlflow.io.artifacts.MlflowArtifactDataSet
