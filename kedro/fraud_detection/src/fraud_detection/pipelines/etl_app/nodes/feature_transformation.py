@@ -33,8 +33,12 @@ def transform_datetime_features(transactions_data: pd.DataFrame) -> pd.DataFrame
         return int(night)
 
     # Create new columns based on the existing 'TX_DATETIME' column
-    transactions_data['TX_DURING_WEEKEND'] = transactions_data['TX_DATETIME'].apply(is_weekend)
-    transactions_data['TX_DURING_NIGHT'] = transactions_data['TX_DATETIME'].apply(is_night)
+    transactions_data["TX_DURING_WEEKEND"] = transactions_data["TX_DATETIME"].apply(
+        is_weekend
+    )
+    transactions_data["TX_DURING_NIGHT"] = transactions_data["TX_DATETIME"].apply(
+        is_night
+    )
 
     return transactions_data
 
@@ -52,42 +56,57 @@ def transform_customer_features(transactions_data: pd.DataFrame) -> pd.DataFrame
         transactions_data: a dataframe with updated transactions data
     """
 
-    def get_customer_spending_behaviour_features(customer_transactions, windows_size_in_days=[1, 7, 30]):
-        # Let us first order transactions chronologically
-        customer_transactions = customer_transactions.sort_values('TX_DATETIME')
-
-        # The transaction date and time is set as the index, which will allow the use of the rolling function
-        customer_transactions.index = customer_transactions.TX_DATETIME
-
-        # For each window size
-        for window_size in windows_size_in_days:
-            # Convert window size from days to periods
-            window_size_alias = f"{window_size}D"
-
-            # Compute the sum of the transaction amounts and the number of transactions for the given window size
-            SUM_AMOUNT_TX_WINDOW = customer_transactions['TX_AMOUNT'].rolling(window=window_size_alias).sum()
-            NB_TX_WINDOW = customer_transactions['TX_AMOUNT'].rolling(window=window_size_alias).count()
-
-            # Compute the average transaction amount for the given window size
-            # NB_TX_WINDOW is always >0 since current transaction is always included
-            AVG_AMOUNT_TX_WINDOW = SUM_AMOUNT_TX_WINDOW / NB_TX_WINDOW
-
-            # Save feature values
-            customer_transactions['CUSTOMER_ID_NB_TX_' + str(window_size) + 'DAY_WINDOW'] = list(NB_TX_WINDOW)
-            customer_transactions['CUSTOMER_ID_AVG_AMOUNT_' + str(window_size) + 'DAY_WINDOW'] = list(
-                AVG_AMOUNT_TX_WINDOW)
-
-        # Reindex according to transaction IDs
-        customer_transactions.index = customer_transactions.TRANSACTION_ID
-
-        # And return the dataframe with the new features
-        return customer_transactions
-
-    transactions_data = transactions_data.groupby('CUSTOMER_ID').apply(
-        lambda x: get_customer_spending_behaviour_features(x, [1, 7, 30]))
-    transactions_data = transactions_data.sort_values('TX_DATETIME').reset_index(drop=True)
+    transactions_data = transactions_data.groupby("CUSTOMER_ID").apply(
+        lambda x: get_customer_spending_behaviour_features(x, [1, 7, 30])
+    )
+    transactions_data = transactions_data.sort_values("TX_DATETIME").reset_index(
+        drop=True
+    )
 
     return transactions_data
+
+
+def get_customer_spending_behaviour_features(
+    customer_transactions, windows_size_in_days=None
+):
+    # Let us first order transactions chronologically
+    if windows_size_in_days is None:
+        windows_size_in_days = [1, 7, 30]
+    customer_transactions = customer_transactions.sort_values("TX_DATETIME")
+
+    # The transaction date and time is set as the index, which will allow the use of the rolling function
+    customer_transactions.index = customer_transactions.TX_DATETIME
+
+    # For each window size
+    for window_size in windows_size_in_days:
+        # Convert window size from days to periods
+        window_size_alias = f"{window_size}D"
+
+        # Compute the sum of the transaction amounts and the number of transactions for the given window size
+        SUM_AMOUNT_TX_WINDOW = (
+            customer_transactions["TX_AMOUNT"].rolling(window=window_size_alias).sum()
+        )
+        NB_TX_WINDOW = (
+            customer_transactions["TX_AMOUNT"].rolling(window=window_size_alias).count()
+        )
+
+        # Compute the average transaction amount for the given window size
+        # NB_TX_WINDOW is always >0 since current transaction is always included
+        AVG_AMOUNT_TX_WINDOW = SUM_AMOUNT_TX_WINDOW / NB_TX_WINDOW
+
+        # Save feature values
+        customer_transactions[
+            "CUSTOMER_ID_NB_TX_" + str(window_size) + "DAY_WINDOW"
+        ] = list(NB_TX_WINDOW)
+        customer_transactions[
+            "CUSTOMER_ID_AVG_AMOUNT_" + str(window_size) + "DAY_WINDOW"
+        ] = list(AVG_AMOUNT_TX_WINDOW)
+
+    # Reindex according to transaction IDs
+    customer_transactions.index = customer_transactions.TRANSACTION_ID
+
+    # And return the dataframe with the new features
+    return customer_transactions
 
 
 def transform_terminal_features(transactions_data: pd.DataFrame) -> pd.DataFrame:
@@ -102,42 +121,67 @@ def transform_terminal_features(transactions_data: pd.DataFrame) -> pd.DataFrame
         transactions_data: a dataframe with updated transactions data
     """
 
-    def get_count_risk_rolling_window(terminal_transactions, delay_period=7, windows_size_in_days=[1, 7, 30],
-                                      feature="TERMINAL_ID"):
-        terminal_transactions = terminal_transactions.sort_values('TX_DATETIME')
-
-        terminal_transactions.index = terminal_transactions.TX_DATETIME
-
-        NB_FRAUD_DELAY = terminal_transactions['TX_FRAUD'].rolling(window=delay_period, min_periods=delay_period).sum()
-        NB_TX_DELAY = terminal_transactions['TX_FRAUD'].rolling(window=delay_period, min_periods=delay_period).count()
-
-        for window_size in windows_size_in_days:
-            # Convert window size from days to periods
-            window_size_alias = f"{window_size + delay_period}D"
-
-            NB_FRAUD_DELAY_WINDOW = terminal_transactions['TX_FRAUD'].rolling(
-                window=window_size_alias).sum()
-            NB_TX_DELAY_WINDOW = terminal_transactions['TX_FRAUD'].rolling(
-                window=window_size_alias).count()
-
-            NB_FRAUD_WINDOW = NB_FRAUD_DELAY_WINDOW - NB_FRAUD_DELAY
-            NB_TX_WINDOW = NB_TX_DELAY_WINDOW - NB_TX_DELAY
-
-            RISK_WINDOW = NB_FRAUD_WINDOW / NB_TX_WINDOW
-
-            terminal_transactions[feature + '_NB_TX_' + str(window_size) + 'DAY_WINDOW'] = list(NB_TX_WINDOW)
-            terminal_transactions[feature + '_RISK_' + str(window_size) + 'DAY_WINDOW'] = list(RISK_WINDOW)
-
-        terminal_transactions.index = terminal_transactions.TRANSACTION_ID
-
-        # Replace NA values with 0 (all undefined risk scores where NB_TX_WINDOW is 0)
-        terminal_transactions.fillna(0, inplace=True)
-
-        return terminal_transactions
-
-    transactions_data = transactions_data.groupby('TERMINAL_ID').apply(
-        lambda x: get_count_risk_rolling_window(x, delay_period=7, windows_size_in_days=[1, 7, 30],
-                                                feature="TERMINAL_ID"))
-    transactions_data = transactions_data.sort_values('TX_DATETIME').reset_index(drop=True)
+    transactions_data = transactions_data.groupby("TERMINAL_ID").apply(
+        lambda x: get_count_risk_rolling_window(
+            x, delay_period=7, windows_size_in_days=[1, 7, 30], feature="TERMINAL_ID"
+        )
+    )
+    transactions_data = transactions_data.sort_values("TX_DATETIME").reset_index(
+        drop=True
+    )
 
     return transactions_data
+
+
+def get_count_risk_rolling_window(
+    terminal_transactions,
+    delay_period=7,
+    windows_size_in_days=None,
+    feature="TERMINAL_ID",
+):
+    if windows_size_in_days is None:
+        windows_size_in_days = [1, 7, 30]
+    terminal_transactions = terminal_transactions.sort_values("TX_DATETIME")
+
+    terminal_transactions.index = terminal_transactions.TX_DATETIME
+
+    NB_FRAUD_DELAY = (
+        terminal_transactions["TX_FRAUD"]
+        .rolling(window=delay_period, min_periods=delay_period)
+        .sum()
+    )
+    NB_TX_DELAY = (
+        terminal_transactions["TX_FRAUD"]
+        .rolling(window=delay_period, min_periods=delay_period)
+        .count()
+    )
+
+    for window_size in windows_size_in_days:
+        # Convert window size from days to periods
+        window_size_alias = f"{window_size + delay_period}D"
+
+        NB_FRAUD_DELAY_WINDOW = (
+            terminal_transactions["TX_FRAUD"].rolling(window=window_size_alias).sum()
+        )
+        NB_TX_DELAY_WINDOW = (
+            terminal_transactions["TX_FRAUD"].rolling(window=window_size_alias).count()
+        )
+
+        NB_FRAUD_WINDOW = NB_FRAUD_DELAY_WINDOW - NB_FRAUD_DELAY
+        NB_TX_WINDOW = NB_TX_DELAY_WINDOW - NB_TX_DELAY
+
+        RISK_WINDOW = NB_FRAUD_WINDOW / NB_TX_WINDOW
+
+        terminal_transactions[
+            feature + "_NB_TX_" + str(window_size) + "DAY_WINDOW"
+        ] = list(NB_TX_WINDOW)
+        terminal_transactions[
+            feature + "_RISK_" + str(window_size) + "DAY_WINDOW"
+        ] = list(RISK_WINDOW)
+
+    terminal_transactions.index = terminal_transactions.TRANSACTION_ID
+
+    # Replace NA values with 0 (all undefined risk scores where NB_TX_WINDOW is 0)
+    terminal_transactions.fillna(0, inplace=True)
+
+    return terminal_transactions

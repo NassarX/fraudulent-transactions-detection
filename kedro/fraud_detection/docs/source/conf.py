@@ -120,7 +120,7 @@ html_show_sourcelink = False
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "kedro_mlflow_tutorialdoc"
+htmlhelp_basename = "fraud_detectiondoc"
 
 # -- Options for LaTeX output ------------------------------------------------
 

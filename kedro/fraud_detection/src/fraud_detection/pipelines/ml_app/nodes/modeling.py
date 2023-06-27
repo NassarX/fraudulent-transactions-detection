@@ -10,13 +10,13 @@ from xgboost import XGBClassifier
 
 
 def fit_predict_models(
-        input_features: list,
-        x_train: pd.DataFrame,
-        x_test: pd.DataFrame,
-        y_train: pd.DataFrame,
-        output_feature="TX_FRAUD"
+    input_features: list,
+    x_train: pd.DataFrame,
+    x_test: pd.DataFrame,
+    y_train: pd.DataFrame,
+    output_feature="TX_FRAUD",
 ) -> tuple[Any, Any]:
-    """ Fits and predicts multiple models on the training and test datasets
+    """Fits and predicts multiple models on the training and test datasets
     :param input_features: List of input features
     :param x_train: DataFrame containing training data
     :param x_test: DataFrame containing test data
@@ -48,7 +48,7 @@ def fit_predict_models(
             input_features=input_features,
             x_train=x_train,
             y_train=y_train,
-            output_feature=output_feature
+            output_feature=output_feature,
         )
 
         # Store model
@@ -64,13 +64,13 @@ def fit_predict_models(
 
 
 def fit_model(
-        model,
-        input_features: list,
-        x_train: pd.DataFrame,
-        y_train: pd.DataFrame,
-        output_feature,
+    model,
+    input_features: list,
+    x_train: pd.DataFrame,
+    y_train: pd.DataFrame,
+    output_feature,
 ):
-    """ Fits a model on the training dataset and returns the trained model and training time
+    """Fits a model on the training dataset and returns the trained model and training time
     :param model: Model to fit
     :param input_features: List of input features
     :param x_train: DataFrame containing training data
@@ -86,11 +86,8 @@ def fit_model(
     return model, training_time
 
 
-def predict(
-        model,
-        x_test: pd.DataFrame,
-        input_features: list) -> Dict[str, Any]:
-    """ Predicts using a trained model on the test dataset
+def predict(model, x_test: pd.DataFrame, input_features: list) -> Dict[str, Any]:
+    """Predicts using a trained model on the test dataset
     :param model: Trained model
     :param x_test: DataFrame containing test data
     :param input_features: List of input features
@@ -104,7 +101,7 @@ def predict(
 
 
 def extract_model_configs(model: str, parameters: Dict[str, Any]) -> Dict[str, Any]:
-    """ Extracts model configs from parameters.yml
+    """Extracts model configs from parameters.yml
     :param model: Name of model
     :param parameters: Dictionary containing parameters
     :return: Dictionary containing model configs
@@ -116,9 +113,10 @@ def extract_model_configs(model: str, parameters: Dict[str, Any]) -> Dict[str, A
     return configs
 
 
-def scaleData(train_df: pd.DataFrame, test_df: pd.DataFrame, input_features: List[str]) -> Tuple[
-    pd.DataFrame, pd.DataFrame]:
-    """ Scales the input features in both train and test datasets
+def scaleData(
+    train_df: pd.DataFrame, test_df: pd.DataFrame, input_features: List[str]
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Scales the input features in both train and test datasets
     :param train_df: DataFrame containing training data
     :param test_df: DataFrame containing test data
     :param input_features: List of input features
@@ -131,18 +129,29 @@ def scaleData(train_df: pd.DataFrame, test_df: pd.DataFrame, input_features: Lis
     scaler.fit(train_df[input_features])
 
     # Scale the input features in both train and test datasets
-    train_df_scaled = pd.DataFrame(scaler.transform(train_df[input_features]), columns=input_features)
-    test_df_scaled = pd.DataFrame(scaler.transform(test_df[input_features]), columns=input_features)
+    train_df_scaled = pd.DataFrame(
+        scaler.transform(train_df[input_features]), columns=input_features
+    )
+    test_df_scaled = pd.DataFrame(
+        scaler.transform(test_df[input_features]), columns=input_features
+    )
 
     # Combine the scaled features with the remaining columns
-    train_df_scaled = pd.concat([train_df_scaled, train_df.drop(columns=input_features)], axis=1)
-    test_df_scaled = pd.concat([test_df_scaled, test_df.drop(columns=input_features)], axis=1)
+    train_df_scaled = pd.concat(
+        [train_df_scaled, train_df.drop(columns=input_features)], axis=1
+    )
+    test_df_scaled = pd.concat(
+        [test_df_scaled, test_df.drop(columns=input_features)], axis=1
+    )
 
     return train_df_scaled, test_df_scaled
 
 
-def build_classifier(classifier_name: str, configs: Dict[str, Any], ):
-    """ Builds a classifier based on the classifier name
+def build_classifier(
+    classifier_name: str,
+    configs: Dict[str, Any],
+):
+    """Builds a classifier based on the classifier name
     :param classifier_name:  of classifier
     :param configs: Dictionary containing classifier configs
     :return: Classifier
