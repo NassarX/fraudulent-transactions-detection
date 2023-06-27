@@ -1,6 +1,3 @@
-"""kedro mlflow tutorial file for ensuring the package is executable
-as `kedro-mlflow-tutorial` and `python -m fraud_detection`
-"""
 import importlib
 from pathlib import Path
 
