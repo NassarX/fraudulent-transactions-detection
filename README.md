@@ -3,7 +3,8 @@
 >Course project of **`Machine Learning Operations (MLOPs)`**  course - [MDSAA-DS](www.novaims.unl.pt/MDSAA-DS) - Spring 2023
 
 ## Overview
-@TODO
+
+This project aims to build a machine learning pipeline for detecting fraudulent transactions in credit card data. The pipeline is built using the [Kedro](https://kedro.readthedocs.io/en/stable/) framework and [MLflow](https://mlflow.org/) for experiment tracking. The pipeline is deployed using [Docker](https://www.docker.com/) and [Github Actions](https://github.com/features/actions) for CI/CD.
 
 ## Table of Contents
 
