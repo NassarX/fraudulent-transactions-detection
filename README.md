@@ -332,11 +332,6 @@ kedro viz --host=0.0.0.0 --no-browser
   kedro <command>
 ```
 
-example:
-
-```shell
- kedro --help
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
