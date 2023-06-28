@@ -17,6 +17,14 @@ from kedro.framework.hooks import _create_hook_manager
 from pathlib import Path
 from kedro.framework.context import KedroContext
 
+# register modules to be tested
+import os
+import sys
+
+# Add the project directory to sys.path
+sys.path.append(os.path.abspath("../../src"))
+
+
 from src.fraud_detection.pipelines.etl_app.nodes.data_generation import (
     generate_customer_profiles_data,
     generate_terminals_data,
