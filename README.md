@@ -127,6 +127,20 @@ Its importance comes from automating manual steps in the data science developmen
 
 Kedro is a python package which facilitates the prototyping of data pipelines. It aims at enforcing software engineering best practices (separation between I/O and compute, abstraction, templating…). 
 
+- Kedro Pipelines:
+  - ETL pipelines.
+    - Data Generation
+    - Data Ingestion
+    - Data Transformation
+    - Data Loading
+    - Data Preprocessing
+  - Machine Learning pipelines
+    - Model training
+    - Model evaluation
+  - Inference pipelines
+    - Model serving
+    - Model monitoring
+
 ## MLflow
 
 Mlflow is a library which manages the lifecycle of machine learning models. Mlflow provides 4 modules:
@@ -138,7 +152,7 @@ Mlflow is a library which manages the lifecycle of machine learning models. Mlfl
 
 ## Github Actions
 
-@TODO
+Github Actions is a CI/CD tool which allows to automate the execution of workflows. It is integrated with Github, and can be triggered by events such as a push on a branch, a pull request, or a new release.
 
 ## Quick Start
 
@@ -305,6 +319,11 @@ Commands:
   mlflow  Use mlflow-specific commands inside kedro project.
 ```
 
+Run `kedro viz` to visualize the pipeline, and open `localhost:4142` in your browser.
+```shell
+kedro viz --host=0.0.0.0 --no-browser
+```
+
 ### Local
 
 ```shell
@@ -312,6 +331,11 @@ Commands:
     
   kedro <command>
 ```
+
+example:
+
+```shell
+ kedro --help
 
 ## Contributing
 
