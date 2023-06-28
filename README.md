@@ -17,25 +17,19 @@
   - [ML-based fraud detection system](#ml-based-fraud-detection-system)
     - [Fraud Detection Model](#fraud-detection-model)
     - [Traning and Validation](#training-and-validation)
-- [Features](#features)
-  - [ML Pipelines](#ml-pipelines)
-  - [Kedro Framework](#kedro-framework)
-  - [Mlflow](#mlflow)
-  - [Github Actions](#github-actions)
+- [General Pipeline Structure](#general-pipeline-structure)
+- [Kedro Framework](#kedro-framework)
+- [Mlflow](#mlflow)
+- [Docker](#docker)
+- [Github Actions](#github-actions)
 - [Quick Start](#quick-start)
-  - [Pre-requisites](#pre-requisites)
-    - [Environment Setup](#environment-setup)
-      - [Docker setup](#docker)
-      - [Local setup](#local) 
+  - [Environment Setup](#environment-setup)
+    - [Docker setup](#docker)
+    - [Local setup](#local) 
   - [Project Structure](#project-structure)
 - [Usage](#usage)
-  - [Kedro Pipelines](#kedro-pipelines)
-    - [ETL](#etl)
-      - [Data Generation](#data-generation)
-      - [Data Engineering](#data-engineering)
-    - [Machine Learning](#machine-learning)
-    - [Evaluation](#evaluation)
-- [Future Work](#future-work)
+  - [Docker](#docker-usage)
+  - [Local](#local-usage)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -68,6 +62,7 @@ The dataset is organized in a tabular form, with each transaction representing t
 ![Tx_table](assets/tx_table.png)
 
 #### Data Simulation
+The credit card transaction data is obtained from the collaboration between Worldline and Machine Learning Group. It is a realistic simulation of real-world credit card transactions and has been designed to include complicated fraud detection issues.
 
 The transaction data simulator we present below is a simplified approximation of real-world dynamics. Its design choice focuses on generating transactions and fraudulent behaviors with simple rules. The simulated datasets aim to highlight the issues faced by fraud detection practitioners with real-world data. 
 These datasets include class imbalance (less than 1% fraudulent transactions), a combination of numerical and categorical features (with numerous categorical values), complex feature relationships, and time-dependent fraud scenarios.
@@ -120,12 +115,206 @@ $$
 
 - Particular care must be taken in practice when splitting the dataset into training and validation sets, due to the sequential nature of credit card transactions, and the delay in fraud reporting.
 
+## General Pipeline Structure
+
+The goal of these pipelines is to create a systematic workflow where raw data is transformed into actionable business insights in an automated and repeatable fashion.
+Its importance comes from automating manual steps in the data science development cycle, which are repetitive, labour-intensive, error-prone, and time-consuming.
+
+![pipeline_structure](assets/general_pipelines.png)
+
+## Kedro Framework
+
+Kedro is a python package which facilitates the prototyping of data pipelines. It aims at enforcing software engineering best practices (separation between I/O and compute, abstraction, templating…). 
+
+## MLflow
+
+Mlflow is a library which manages the lifecycle of machine learning models. Mlflow provides 4 modules:
+
+- **Mlflow Tracking**: This modules focuses on experiment versioning. Its goal is to store all the objects needed to reproduce any code execution.
+- **Mlflow Projects**: This module provides a configuration files and CLI to enable reproducible execution of pipelines in production phase.
+- **Mlflow Models**: This module defines a standard way for packaging machine learning models, and provides built-in ways to serve registered models.
+- **Mlflow Model Registry**: This modules aims at monitoring deployed models.
+
+## Github Actions
+
+@TODO
+
+## Quick Start
+
+### Environment Setup
+
+Feel free to use any of the following methods to run the application locally.
+
+#### Docker
+
+- Prerequisites
+  ```requirements.txt
+    Docker
+    Docker-Compose
+  ```
+
+This application is shipped with the Docker Compose environment and requires Docker to be installed locally and running.
+If you're not familiar with Docker or don't have it locally, please reach out to 
+[the official website](https://www.docker.com) to get the latest version and installation instructions.
+
+Once you have Docker up and running please perform the following command to start the application:
+
+```shell
+cp .env.example .env
+```
+
+`.env` file contains all the environment variables that are used by the containers and can be modified to suit your needs.
+
+```shell
+docker-compose up
+```
+
+This will start the application and create the following containers:
+
+- mlflow server running on port 5001
+  - make sure to edit `mlflow.yml` in `conf/base/` to set the `mlflow_tracking_uri`. 
+- fastapi server running on port 80
+- kedro container running on port `4142 (kedro-viz)` and `8889 (jupyter notebook)`.
+
+```shell
+docker-compose down --rmi all
+```
+
+This will stop the application and remove containers & network.
+
+#### Local
+
+- Prerequisites
+  ```requirements.txt
+    git
+    Python 3.8+
+    pip
+    Conda
+    kedro
+    kedro-viz
+    mlflow
+    kedro-mlflow
+  ```
+To run the application locally, you need to create a virtual environment for your project.
+
+```shell
+conda create --name <env> python=3.10 -y
+```
+
+Activate the environment and install the dependencies.
+
+```shell
+conda activate <env>
+cd kedro/fraud-detection
+pip install -r requirements.txt
+```
+
+#### Project Structure
+
+```shell
+.
+├── app
+│   └── main.py
+├── docker
+│   ├── app
+│   │   └── config
+│   ├── kedro
+│   │   ├── bin
+│   │   └── config
+│   └── mlflow-server
+│       ├── bin
+│       └── config
+├── kedro
+│   └── fraud_detection
+│       ├── conf
+│       │   ├── base
+│       │   └── local
+│       ├── data
+│       │   ├── 01_raw
+│       │   ├── 02_intermediate
+│       │   ├── 03_primary
+│       │   ├── 04_feature
+│       │   ├── 05_model_input
+│       │   ├── 06_models
+│       │   ├── 07_model_output
+│       │   └── 08_reporting
+│       ├── docs
+│       │   ├── build
+│       │   ├── imgs
+│       │   └── source
+│       ├── logs
+│       ├── notebooks
+│       └── src
+│           ├── build
+│           ├── fraud_detection
+│           └── tests
+└── mlruns
+```
+
+## Usage
+
+### Docker
+
+To execute kedro commands, you need to enter the kedro container first.
+
+
+```shell
+ docker exec -it kedro-fraud-detection /bin/bash
+ 
+ cd projects/fraud-detection
+ 
+ kedro <command>
+```
+
+example:
+
+```shell
+ kedro --help
+
+
+Global commands from Kedro
+Commands:
+  docs     See the kedro API docs and introductory tutorial.
+  info     Get more information about kedro.
+  new      Create a new kedro project.
+  starter  Commands for working with project starters.
+
+Global commands from Kedro-Viz
+Commands:
+  viz  Visualise a Kedro pipeline using Kedro viz.
+
+Project specific commands from Kedro
+Commands:
+  activate-nbstripout  Install the nbstripout git hook to automatically...
+  build-docs           Build the project documentation.
+  build-reqs           Run `pip-compile` on src/requirements.txt or the...
+  catalog              Commands for working with catalog.
+  ipython              Open IPython with project specific variables loaded.
+  jupyter              Open Jupyter Notebook / Lab with project specific...
+  lint                 Run flake8, isort and black.
+  micropkg             Commands for working with micro-packages.
+  package              Package the project as a Python wheel.
+  pipeline             Commands for working with pipelines.
+  registry             Commands for working with registered pipelines.
+  run                  Run the pipeline.
+  test                 Run the test suite.
+
+Project specific commands from Mlflow
+Commands:
+  mlflow  Use mlflow-specific commands inside kedro project.
+```
+
+### Local
+
+```shell
+  cd kedro/fraud-detection
+    
+  kedro <command>
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
-
-Great Expectations
-
