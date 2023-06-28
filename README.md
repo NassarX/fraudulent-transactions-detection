@@ -21,12 +21,11 @@ This project aims to build a machine learning pipeline for detecting fraudulent 
 - [General Pipeline Structure](#general-pipeline-structure)
 - [Kedro Framework](#kedro-framework)
 - [Mlflow](#mlflow)
-- [Docker](#docker)
 - [Github Actions](#github-actions)
 - [Quick Start](#quick-start)
   - [Environment Setup](#environment-setup)
-    - [Docker setup](#docker)
-    - [Local setup](#local) 
+    - [Docker](#docker-setup)
+    - [Local](#local-setup) 
   - [Project Structure](#project-structure)
 - [Usage](#usage)
   - [Docker](#docker-usage)
@@ -160,7 +159,7 @@ Github Actions is a CI/CD tool which allows to automate the execution of workflo
 
 Feel free to use any of the following methods to run the application locally.
 
-#### Docker
+#### Docker Setup
 
 - Prerequisites
   ```requirements.txt
@@ -197,7 +196,7 @@ docker-compose down --rmi all
 
 This will stop the application and remove containers & network.
 
-#### Local
+#### Local Setup
 
 - Prerequisites
   ```requirements.txt
@@ -268,7 +267,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-### Docker
+### Docker Usage
 
 To execute kedro commands, you need to enter the kedro container first.
 
@@ -324,7 +323,7 @@ Run `kedro viz` to visualize the pipeline, and open `localhost:4142` in your bro
 kedro viz --host=0.0.0.0 --no-browser
 ```
 
-### Local
+### Local Usage
 
 ```shell
   cd kedro/fraud-detection
