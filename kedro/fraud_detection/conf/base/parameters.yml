@@ -6,6 +6,10 @@ start_date: "2020-01-01"
 radius: 5
 new_radius: 50
 
+# Fraud Scenario 4 - Velocity-based fraud detection
+velocity_window_seconds: 7200  # 2 hours in seconds
+velocity_threshold: 10  # number of transactions per window to trigger fraud detection
+
 # Preprocessing | Splitting configs
 start_train_date: "2020-01-01"
 delta_train: 10

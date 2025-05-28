@@ -253,12 +253,16 @@ def generate_fraud_Scenarios_data(
     customer_profiles_data: pd.DataFrame,
     terminals_data: pd.DataFrame,
     transactions_data: pd.DataFrame,
+    velocity_window_seconds: int = 7200,
+    velocity_threshold: int = 10,
 ) -> pd.DataFrame:
     """Generate fraud scenarios data.
     params:
         customer_profiles_data: a dataframe with customer profiles data
         terminals_data: a dataframe with terminal profiles data
         transactions_data: a dataframe with transactions data
+        velocity_window_seconds: time window in seconds for velocity fraud detection
+        velocity_threshold: number of transactions threshold for velocity fraud detection
     returns:
         transactions_data: a dataframe with transactions data
     """
@@ -339,11 +343,60 @@ def generate_fraud_Scenarios_data(
     )
     print("Number of frauds from scenario 3: " + str(nb_frauds_scenario_3))
 
+    # Scenario 4
+    """Scenario 4: Velocity-based fraud detection. Implementation: For each day, identify customers who make 
+    more than velocity_threshold transactions within a velocity_window_seconds window. This simulates account takeover fraud 
+    where attackers make rapid successive transactions. The transactions exceeding the velocity threshold 
+    are marked as fraudulent.
+    """
+    
+    for day in range(transactions_data["TX_TIME_DAYS"].max()):
+        # Get transactions for the current day
+        day_transactions = transactions_data[
+            transactions_data["TX_TIME_DAYS"] == day
+        ].sort_values("TX_TIME_SECONDS")
+        
+        # Group by customer and check velocity
+        for customer_id in day_transactions["CUSTOMER_ID"].unique():
+            customer_day_transactions = day_transactions[
+                day_transactions["CUSTOMER_ID"] == customer_id
+            ].sort_values("TX_TIME_SECONDS")
+            
+            if len(customer_day_transactions) < velocity_threshold:
+                continue
+                
+            # Sliding window approach to detect velocity fraud
+            for i in range(len(customer_day_transactions) - velocity_threshold + 1):
+                window_transactions = customer_day_transactions.iloc[i:i + velocity_threshold]
+                time_diff = (
+                    window_transactions["TX_TIME_SECONDS"].iloc[-1] - 
+                    window_transactions["TX_TIME_SECONDS"].iloc[0]
+                )
+                
+                # If 10+ transactions occur within 2 hours, mark as fraud
+                if time_diff <= velocity_window_seconds:
+                    # Mark the last half of transactions in the window as fraudulent
+                    fraud_indices = window_transactions.index[velocity_threshold//2:]
+                    transactions_data.loc[fraud_indices, "TX_FRAUD"] = 1
+                    transactions_data.loc[fraud_indices, "TX_FRAUD_SCENARIO"] = 4
+                    break  # Avoid double-marking transactions for same customer on same day
+
+    nb_frauds_scenario_4 = (
+        transactions_data[transactions_data["TX_FRAUD_SCENARIO"] == 4]["TX_FRAUD"].sum()
+    )
+    print("Number of frauds from scenario 4: " + str(nb_frauds_scenario_4))
+
     return transactions_data
 
 
 def generate_dataset(
-    n_customers: int, n_terminals: int, radius: float, start_date: str, nb_days: int
+    n_customers: int, 
+    n_terminals: int, 
+    radius: float, 
+    start_date: str, 
+    nb_days: int,
+    velocity_window_seconds: int = 7200,
+    velocity_threshold: int = 10,
 ) -> pd.DataFrame:
     """Generate a dataset with transactions data.
     params:
@@ -352,7 +405,8 @@ def generate_dataset(
         radius: radius of the circle around the customer
         start_date: start date of the transactions
         nb_days: number of days to generate transactions for
-        random_state: random state for reproducibility
+        velocity_window_seconds: time window in seconds for velocity fraud detection
+        velocity_threshold: number of transactions threshold for velocity fraud detection
 
     returns:
         transactions_data: a dataframe with transactions data
@@ -377,7 +431,8 @@ def generate_dataset(
 
     # Generate frauds data
     fraud_transactions_df = generate_fraud_Scenarios_data(
-        customers_terminals_data, terminals_data, transactions_data
+        customers_terminals_data, terminals_data, transactions_data,
+        velocity_window_seconds, velocity_threshold
     )
 
     return fraud_transactions_df

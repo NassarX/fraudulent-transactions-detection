@@ -73,6 +73,8 @@ def create_etl_pipeline(**kwargs):
                     customer_profiles_data="customers_terminals_data",
                     terminals_data="terminals_data",
                     transactions_data="transactions_data",
+                    velocity_window_seconds="params:velocity_window_seconds",
+                    velocity_threshold="params:velocity_threshold",
                 ),
                 outputs="fraud_transactions_data",
                 tags=["etl", "etl_generate"],
